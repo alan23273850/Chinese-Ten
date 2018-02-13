@@ -1,4 +1,5 @@
 #include "player.h"
+#pragma comment(lib, "user32.lib")
 
 void Player::EnableComputer(){
     computer = true;
