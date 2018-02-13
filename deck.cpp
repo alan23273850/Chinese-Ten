@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <stdlib.h>
 #include "deck.h"
+#include "color.h"
 
 using namespace std;
 
@@ -139,40 +140,40 @@ char int_to_char(int n){
         void Deck::Print () { // print all the cards in the deck
             Sort();
             char order;
-            cout << ' ';
+            wcout << ' ';
             for( unsigned int i=0; i<cards.size(); i++){//Print the order.
                 if( i<=9 )
                     order = '0' + i;
                 else
                     order = 'A' + i - 10;
-                cout << '(' << order << ')';
-                cout << ' ';
+                wcout << '(' << order << ')';
+                wcout << ' ';
             }
-            cout << endl;
+            wcout << endl;
 
-            cout << ' ';
+            wcout << ' ';
             for( unsigned int i=0; i<cards.size(); i++){//Print the suit.
-                if( cards.at(i).suit_name() == "Diamond" || cards.at(i).suit_name() == "Heart" )
-                    SetColor(12,7);
+                if( cards.at(i).suit_name() == L"Diamond" || cards.at(i).suit_name() == L"Heart" )
+                    ColorHandler::SetColor(12,7);
                 else
-                    SetColor(0,7);
-                cout << setw(2) << cards.at(i).suit_icon() << ' ';
-                SetColor();
-                cout << ' ';
+                    ColorHandler::SetColor(0,7);
+                wcout << setw(2) << cards.at(i).suit_icon() << ' ';
+                ColorHandler::SetBackground();
+                wcout << ' ';
             }
-            cout << endl;
+            wcout << endl;
 
-            cout << ' ';
+            wcout << ' ';
             for( unsigned int i=0; i<cards.size(); i++){//Print the rank.
-                if( cards.at(i).suit_name() == "Diamond" || cards.at(i).suit_name() == "Heart" )
-                    SetColor(12,7);
+                if( cards.at(i).suit_name() == L"Diamond" || cards.at(i).suit_name() == L"Heart" )
+                    ColorHandler::SetColor(12,7);
                 else
-                    SetColor(0,7);
-                cout << setw(2) << cards.at(i).rank_name() << ' ';
-                SetColor();
-                cout << ' ';
+                    ColorHandler::SetColor(0,7);
+                wcout << setw(2) << cards.at(i).rank_name() << ' ';
+                ColorHandler::SetBackground();
+                wcout << ' ';
             }
-            cout << endl;
+            wcout << endl;
         }
 
         Card::Rank Deck::special_check (int n) const {//n=3(or 4), check three(or four) same specific cards
@@ -239,34 +240,34 @@ char int_to_char(int n){
 
         int Print_match_first(Deck deck1, Deck deck2, vector<int_pair> Pair) {
             if( Pair.size()>0 )
-                cout << "\nHere is a quick search for you.\n\n";
+                wcout << L"\nHere is a quick search for you.\n\n";
             else
                 return 0;
             for(unsigned int i=0; i<Pair.size(); i++){
-                cout << "You can use your card (" << int_to_char(Pair.at(i).x) << ')';
+                wcout << L"You can use your card (" << int_to_char(Pair.at(i).x) << ')';
                 deck1.card(Pair.at(i).x).Print();
-                cout << " to capture card (" << int_to_char(Pair.at(i).y) << ')';
+                wcout << L" to capture card (" << int_to_char(Pair.at(i).y) << ')';
                 deck2.card(Pair.at(i).y).Print();
-                cout << ".\n";
+                wcout << L".\n";
             }
             return 1;
         }
 
         int Print_match_second(Deck deck, vector<int_pair> Pair) {
             if( Pair.size()>0 ){
-                cout << "\nHere is a quick search for you.\n\n";
-                cout << "You can capture card";
+                wcout << L"\nHere is a quick search for you.\n\n";
+                wcout << L"You can capture card";
             }
             else
                 return 0;
             for(unsigned int i=0; i<Pair.size(); i++){
-                cout << ' ';
-                cout << '(' << int_to_char(Pair.at(i).y) << ')';
+                wcout << ' ';
+                wcout << '(' << int_to_char(Pair.at(i).y) << ')';
                 deck.card(Pair.at(i).y).Print();
                 if( i<Pair.size()-1 )
-                    cout << ',';
+                    wcout << ',';
                 else
-                    cout << ".\n";
+                    wcout << L".\n";
             }
             return 1;
         }

@@ -3,7 +3,7 @@
 #include "player.h"
 
 struct Score{
-    string name;
+    wstring name;
     int score;
     void operator =(const Score right){
         name = right.name;
@@ -19,7 +19,7 @@ class Ranking {
         void Push_back(Score player);
         void Clear();
         int FindTop(int play_persons, unsigned int top_persons);
-        int FindByName(int play_persons, string search);
+        int FindByName(int play_persons, wstring search);
         void Pop_back();
         void SortByScore();
         void SortByName();

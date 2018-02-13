@@ -8,21 +8,28 @@
 #include <ctime>
 #include <conio.h>
 #include <windows.h>
+#include <io.h>
+#include <fcntl.h>
 #include <sstream>
 #include "card.h"
 #include "deck.h"
 #include "player.h"
 #include "ranking.h"
+#include "color.h"
 
 using namespace std;
 
 int main () {
 
-    cout << "==========================Welcome to Chinese Ten!!!!========================\n\n";
-    cout << "Loading";
+    // pre-setting
+    _setmode(_fileno(stdout), _O_U8TEXT);
+    ColorHandler::GetBackground();
+
+    wcout << L"==========================Welcome to Chinese Ten!!!!========================\n\n";
+    wcout << L"Loading";
     for(int i=5; i>0; i--){
         Sleep(200*i);
-        cout << '.';
+        wcout << '.';
     }
 
     MENU:
@@ -30,9 +37,9 @@ int main () {
     vector<Player> players;
     vector<Player> player_buffer;
     vector<int> order;
-    string name;
+    wstring name;
     Card card;
-    string str;
+    wstring str;
     stringstream strstream;
     Ranking ranking;
     Score score;
@@ -56,10 +63,10 @@ int main () {
     ranking.Clear();
 
     system("cls");
-    cout << "==================================Main Menu=================================\n\n";  
-    cout << "(1)Play the game!\n";
-    cout << "(2)Check the ranking table.\n";
-    cout << "( )Exit.\n";
+    wcout << L"==================================Main Menu=================================\n\n";
+    wcout << L"(1)Play the game!\n";
+    wcout << L"(2)Check the ranking table.\n";
+    wcout << L"( )Exit.\n";
     menu = getch();
     switch(menu){
 
@@ -67,37 +74,37 @@ int main () {
 
         case '2':
             system("cls");
-            cout << "===================Ranking Table Menu===================\n\n";
-            cout << "(2)Two persons\n";
-            cout << "(3)Three persons\n";
-            cout << "(4)Four persons\n";
-            cout << "( )Go back to main menu.\n";
+            wcout << L"===================Ranking Table Menu===================\n\n";
+            wcout << L"(2)Two persons\n";
+            wcout << L"(3)Three persons\n";
+            wcout << L"(4)Four persons\n";
+            wcout << L"( )Go back to main menu.\n";
             check_people = getch()-'0';
             if( !(2<=check_people && check_people<=4) )
                 goto MENU;
             system("cls");
-            cout << "===================Ranking Table Menu===================\n\n";
-            cout << "(1)See top 10.\n";
-            cout << "(2)Search for somebody's scores.\n";
-            cout << "( )Go back to main menu.\n\n";
+            wcout << L"===================Ranking Table Menu===================\n\n";
+            wcout << L"(1)See top 10.\n";
+            wcout << L"(2)Search for somebody's scores.\n";
+            wcout << L"( )Go back to main menu.\n\n";
             menu = getch();
             switch(menu){
                 case '1':
                     ranking.FindTop(check_people,10);
                     ranking.Print(10);
-                    cout << "\nPress any key to go back to main menu...\n";
+                    wcout << L"\nPress any key to go back to main menu...\n";
                     getch();
                     break;
                 case '2':
-                    cout << "I want to see <Name>'s scores. Name = ";
-                    cin.sync();
-                    getline(cin,name);
-                    cout << endl;
+                    wcout << L"I want to see <Name>'s scores. Name = ";
+                    wcin.sync();
+                    getline(wcin,name);
+                    wcout << endl;
                     if( ranking.FindByName(check_people,name)==0 )
-                        cout << "There is no any " << name << "\'s record.\n";
+                        wcout << L"There is no any " << name << L"\'s record.\n";
                     else
                         ranking.Print();
-                    cout << "\nPress any key to go back to main menu...\n";
+                    wcout << L"\nPress any key to go back to main menu...\n";
                     getch();
                     break;
                 default: break;
@@ -111,12 +118,12 @@ int main () {
     //Choose the number of players
     do{
         system("cls");
-        cout << "Please choose the number of players ( 2-4 people ): ";
+        wcout << L"Please choose the number of players ( 2-4 people ): ";
         player_num = getche() - '0';
-        cout << endl;
+        wcout << endl;
         if( !(2<=player_num && player_num<=4) ){
             out_of_range = 1;
-            cout << "Sorry, your input is out of range.\n";
+            wcout << L"Sorry, your input is out of range.\n";
             Sleep(1000);
         }
         else
@@ -124,37 +131,37 @@ int main () {
     }while( out_of_range==1 );
 
     //Choose the number of computer players
-    cout << endl;
+    wcout << endl;
     do{
         for(int i=0; i<=player_num; i++)
-            printf("(%d) %d human player(s), %d computer player(s)\n",i,player_num-i,i);
-        cout << "\nMake a choice for the players' property. I want to choose ";
+            wprintf(L"(%d) %d human player(s), %d computer player(s)\n",i,player_num-i,i);
+        wcout << L"\nMake a choice for the players' property. I want to choose ";
         computer_num = getche()-'0';
-        cout << '.' << endl;
+        wcout << '.' << endl;
         if( !(0<=computer_num && computer_num<=player_num) ){
             out_of_range = 1;
-            cout << "Sorry, your input is out of range.\n\n";
+            wcout << L"Sorry, your input is out of range.\n\n";
         }
         else
             out_of_range = 0;
     }while( out_of_range==1 );
 
     //Input the names.
-    cout << "\nGive the players\' names!!\n\n";
+    wcout << L"\nGive the players\' names!!\n\n";
     for(int i=0; i<player_num; i++){
-        cout << "PLAYER" << ": ";
-        cin.sync();
-        name="";
+        wcout << L"PLAYER" << L": ";
+        wcin.sync();
+        name=L"";
         if( i<computer_num ){
-            name = "COMPUTER_";
+            name = L"COMPUTER_";
             name += (i+1+'0');
-            cout << name << endl;
+            wcout << name << endl;
             players.at(i).EnableComputer();
         }
         else
-            getline(cin,name);
-        if( name == "" ){
-            name = "PLAYER_";
+            getline(wcin,name);
+        if( name == L"" ){
+            name = L"PLAYER_";
             name += (i+'A');
         }
         players.at(i).SetName(name);
@@ -183,14 +190,14 @@ int main () {
 
     //Print the rearraged player's order.
     system("cls");
-    cout << "The playing order is:\n\n";
+    wcout << L"The playing order is:\n\n";
     for(int i=0; i<player_num; i++)
-        cout << "Player" << i+1 << ": " << players.at(i).GetName() << endl;
-    cout << "\n### Player1, " << players.at(0).GetName() << " is the so-called dealer. ###\n\n";
+        wcout << L"Player" << i+1 << L": " << players.at(i).GetName() << endl;
+    wcout << L"\n### Player1, " << players.at(0).GetName() << L" is the so-called dealer. ###\n\n";
 
     //Waiting
-    cout << "Press any key to continue...";
-    cin.sync();
+    wcout << L"Press any key to continue...";
+    wcin.sync();
     getch();
 
     //Shuffle the cards.
@@ -214,25 +221,25 @@ int main () {
         while( Layout.special_check(4)!=static_cast<Card::Rank>(Unknown) ){
             card.set_rank( Layout.special_check(4) );
             system("cls");
-            cout << "Now the layout contains four cards of rank \"" << card.rank_name() << "\"." << endl << endl;
-            cout << "Layout:\n\n";
+            wcout << L"Now the layout contains four cards of rank \"" << card.rank_name() << L"\"." << endl << endl;
+            wcout << L"Layout:\n\n";
             Layout.Print();
-            cout << "\nThis is the special case." << endl;
-            cout << "The four cards are now being captured by the dealer, " << players.at(0).GetName() << ".\n\n";
+            wcout << L"\nThis is the special case." << endl;
+            wcout << L"The four cards are now being captured by the dealer, " << players.at(0).GetName() << L".\n\n";
             while( Layout.number()>0 )
                 players.at(0).GetCardToPile(Layout.Deal());
-            cout << "Capturing";
+            wcout << L"Capturing";
             for(int i=5; i>=0; i--){
                 Sleep(500);
-                cout <<'.';
+                wcout <<'.';
             }
-            cout << endl << endl;
-            cout << "Now " << players.at(0).GetName() << " has captured the four cards:\n\n";
+            wcout << endl << endl;
+            wcout << L"Now " << players.at(0).GetName() << L" has captured the four cards:\n\n";
             players.at(0).GetPile().Print();
             for(int i=0; i<4; i++)
                 Layout.Add(Main.Deal());
-            cout << "\nThe new four cards flipped from the deck are now on the table.\n\nPress any key to continue...";
-            cin.sync();
+            wcout << L"\nThe new four cards flipped from the deck are now on the table.\n\nPress any key to continue...";
+            wcin.sync();
 
             //Computer Operation
             if( players.at(0).ComputerOn()==true )
@@ -253,11 +260,11 @@ int main () {
                 break;
 
             system("cls");
-            cout << "Now the layout contains three cards of rank \"" << card.rank_name() << "\"." << endl << endl;
-            cout << "Layout:\n\n";
+            wcout << L"Now the layout contains three cards of rank \"" << card.rank_name() << L"\"." << endl << endl;
+            wcout << L"Layout:\n\n";
             Layout.Print();
-            cout << "\nThis is the special case." << endl;
-            cout << "The three cards are now being captured by the player, " << players.at(player_index).GetName() << ", who has the other card of the same rank.\n\n";
+            wcout << L"\nThis is the special case." << endl;
+            wcout << L"The three cards are now being captured by the player, " << players.at(player_index).GetName() << L", who has the other card of the same rank.\n\n";
             Layout.Sort();
             if( Layout.card(0).rank_name()==card.rank_name() ){
                 for(int i=0; i<3; i++){
@@ -272,18 +279,18 @@ int main () {
             else{
 
             }
-            cout << "Capturing";
+            wcout << L"Capturing";
             for(int i=5; i>=0; i--){
                 Sleep(500);
-                cout <<'.';
+                wcout <<'.';
             }
-            cout << endl << endl;
-            cout << "Now " << players.at(player_index).GetName() << " has captured the three cards:\n\n";
+            wcout << endl << endl;
+            wcout << L"Now " << players.at(player_index).GetName() << L" has captured the three cards:\n\n";
             players.at(player_index).GetPile().Print();
             for(int i=0; i<3; i++)
                 Layout.Add(Main.Deal());
-            cout << "\nThe new three cards flipped from the deck are now on the table.\n\nPress any key to continue...";
-            cin.sync();
+            wcout << L"\nThe new three cards flipped from the deck are now on the table.\n\nPress any key to continue...";
+            wcin.sync();
             //Computer Operation
             if( players.at(player_index).ComputerOn()==true )
                 players.at(player_index).PressAnyKey();
@@ -305,11 +312,11 @@ int main () {
 
     // count points for each player
     system("cls");
-    cout << "========================This game has been finished!!!======================\n\n";
+    wcout << L"========================This game has been finished!!!======================\n\n";
     for (int i=0; i<player_num; i++) {
-        cout << players.at(i).GetName() << "\'s cards" << ":" << endl;
+        wcout << players.at(i).GetName() << L"\'s cards" << L":" << endl;
         players.at(i).GetPile().Print();
-        cout << endl;
+        wcout << endl;
     }
 
     // scoreboard
@@ -328,38 +335,38 @@ int main () {
     //Sort the scores right after the game ends.
     ranking.SortByScore();
 
-    cout << "================================Scoreboard==================================\n\n";
-    cout << "Player: " << player_num << endl;
-    cout << "Tie Score: " << tie_score << " points" << endl << endl;
-    cout << "=Rank=|===============Name===============|====Points====|=======Score=======" << endl;
+    wcout << L"================================Scoreboard==================================\n\n";
+    wcout << L"Player: " << player_num << endl;
+    wcout << L"Tie Score: " << tie_score << L" points" << endl << endl;
+    wcout << L"=Rank=|===============Name===============|====Points====|=======Score=======" << endl;
     for (int i=0; i<player_num; i++) {
-        printf("  %02d  |",i+1);
-        cout << setw(34) << ranking.GetPlayer(i).name << '|';
-        cout << setw(5) << ranking.GetPlayer(i).score;
-        cout << " point(s)|";
+        wprintf(L"  %02d  |",i+1);
+        wcout << setw(34) << ranking.GetPlayer(i).name << '|';
+        wcout << setw(5) << ranking.GetPlayer(i).score;
+        wcout << L" point(s)|";
         if( ranking.GetPlayer(i).score>tie_score ){
-            printf("  Win ");
-            cout << setw(4) << ranking.GetPlayer(i).score-tie_score << " point(s)" << endl;
+            wprintf(L"  Win ");
+            wcout << setw(4) << ranking.GetPlayer(i).score-tie_score << L" point(s)" << endl;
         }
         else if( ranking.GetPlayer(i).score<tie_score ){
-            printf("  Lose");
-            cout << setw(4) << tie_score-ranking.GetPlayer(i).score << " point(s)" << endl;
+            wprintf(L"  Lose");
+            wcout << setw(4) << tie_score-ranking.GetPlayer(i).score << L" point(s)" << endl;
         }
         else if( ranking.GetPlayer(i).score==tie_score ){
-            printf("        Tie\n");
+            wprintf(L"        Tie\n");
         }
         else{
-            printf("-------------------\n");
+            wprintf(L"-------------------\n");
         }
     }
-    cout <<  endl;
+    wcout <<  endl;
 
     //Record the game to a file.
     ranking.Recording(player_num);
 
 
     //Go back to main menu.
-    cout << "Press any key to go back to main menu...\n";
+    wcout << L"Press any key to go back to main menu...\n";
     getch();
     goto MENU;
 
