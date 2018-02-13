@@ -16,7 +16,7 @@ Score Ranking::GetPlayer(int i){
 }
 
 int Ranking::Recording(int people){
-    ofstream FILE;
+    wofstream FILE;
     switch(people){
         case 2: FILE.open("rec_2_players.txt",ios::app); break;
         case 3: FILE.open("rec_3_players.txt",ios::app); break;
@@ -43,24 +43,24 @@ void Ranking::Clear(){
 
 void Ranking::Print(unsigned int n){
 
-    cout << "=====================Ranking Board======================\n\n";
-    cout << "=Rank=|===============Name===============|====Points====" << endl;
+    wcout << L"=====================Ranking Board======================\n\n";
+    wcout << L"=Rank=|===============Name===============|====Points====" << endl;
     unsigned int i;
     for(i=0; i<players.size(); i++){
-        printf("  %02d  |",i+1);
-        cout << setw(34) << players.at(i).name << '|';
-        cout << setw(5) << players.at(i).score;
-        cout << " point(s)\n";
+        wprintf(L"  %02d  |",i+1);
+        wcout << setw(34) << players.at(i).name << '|';
+        wcout << setw(5) << players.at(i).score;
+        wcout << L" point(s)\n";
     }
     while(i<n){
 
-        printf("  %02d  |",i+1);
+        wprintf(L"  %02d  |",i+1);
         for(int j=0; j<34; j++)
-            cout << '-';
-        cout << '|';
+            wcout << '-';
+        wcout << '|';
         for(int j=0; j<14; j++)
-            cout << '-';
-        cout << endl;
+            wcout << '-';
+        wcout << endl;
         i++;
     }
 }
@@ -111,7 +111,7 @@ void Ranking::SortByScore(){// Sort by score
 
 void Ranking::SortByName(){
     Score iter;
-    string min;
+    wstring min;
     unsigned int index, index_before, index_after;
     bool swapped = false;
 
@@ -154,15 +154,15 @@ void Ranking::SortByName(){
     }
 }
 
-int Ranking::FindByName( int play_persons, string search ){//Find someone's name by binary search.
-    ifstream FILE;
+int Ranking::FindByName( int play_persons, wstring search ){//Find someone's name by binary search.
+    wifstream FILE;
     Ranking record;
-    string name;
+    wstring name;
     Score iter;
-    string cpp_str;
+    wstring cpp_str;
     unsigned index, index_left, index_right, index_iter;
     bool found = false;
-    char c_str[100];
+    wchar_t c_str[100];
 
     //Clear the original data in the object.
     Clear();
@@ -180,7 +180,7 @@ int Ranking::FindByName( int play_persons, string search ){//Find someone's name
         cpp_str.assign(c_str);        
         iter.name = cpp_str;        
         FILE.getline(c_str,MAX_LENGTH,'\n');
-        iter.score = atoi(c_str);
+        iter.score = _wtoi(c_str);
         record.Push_back(iter);
     }
     FILE.close();
@@ -221,10 +221,10 @@ int Ranking::FindByName( int play_persons, string search ){//Find someone's name
 }
 
 int Ranking::FindTop(int play_persons, unsigned int top_persons){
-    ifstream FILE;
+    wifstream FILE;
     Score iter;
-    string cpp_str;
-    char c_str[100];
+    wstring cpp_str;
+    wchar_t c_str[100];
 
     //Clear the original data in the object.
     Clear();
@@ -242,7 +242,7 @@ int Ranking::FindTop(int play_persons, unsigned int top_persons){
         cpp_str.assign(c_str);
         iter.name = cpp_str;
         FILE.getline(c_str,MAX_LENGTH,'\n');
-        iter.score = atoi(c_str);
+        iter.score = _wtoi(c_str);
         Push_back(iter);
     }
     FILE.close();

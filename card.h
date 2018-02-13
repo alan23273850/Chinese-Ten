@@ -6,8 +6,6 @@
 #include <iostream>
 using namespace std;
 
-void SetColor(int f=7,int b=0);//Used to generate poker-like colors
-
 class Card {
 
     public:
@@ -20,9 +18,9 @@ class Card {
         Rank rank () const;
         void set_suit (Suit s);
         void set_rank (Rank r);
-        char suit_icon () const;
-        string suit_name () const;
-        string rank_name () const;
+        wstring suit_icon () const;
+        wstring suit_name () const;
+        wstring rank_name () const;
         int Points ( int people ) const;
         void operator =(const Card &card);        
         void Print() const;
@@ -30,8 +28,8 @@ class Card {
     private:
         Suit my_suit;
         Rank my_rank;
-        static const string Suit_Names[];
-        static const string Rank_Names[];
+        static const wstring Suit_Names[];
+        static const wstring Rank_Names[];
 };
 
 #endif // CARD_H

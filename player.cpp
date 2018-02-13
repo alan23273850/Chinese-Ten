@@ -3,6 +3,7 @@
 #include <windows.h>
 #include <time.h>
 #include "player.h"
+#include "color.h"
 using namespace std;
 const int TIME_CONSTANT=800;
 
@@ -21,7 +22,7 @@ int GetKey(){//Used to convert input char into the proper integer.
 
 char int_to_char(int n);
 
-        Player::Player ( string Name ) { // constructor
+        Player::Player ( wstring Name ) { // constructor
             name = Name; //Note that the default name is "Player" defined in "player.h"
             Deck deck;
             Hand = deck;
@@ -88,7 +89,7 @@ char int_to_char(int n);
 
             //Print who's turn.
             system("cls");
-            cout << "=====================It\'s " << name << "\'s turn.=====================\n\n";
+            wcout << L"=====================It\'s " << name << L"\'s turn.=====================\n\n";
 
             int X, Y, success=0, count=0, max=0, min=0, index_x=0, index_y=0, index=0;
             char menu;
@@ -96,9 +97,9 @@ char int_to_char(int n);
             vector<int_pair> Pair;
 
             //Print out layout and hand cards.
-            cout << "Layout:\n";
+            wcout << L"Layout:\n";
             layout.Print();
-            cout << "\nCards in hand:\n";
+            wcout << L"\nCards in hand:\n";
             Hand.Print();
 
             for(unsigned int i=0; i<Find_match(Hand,layout).size(); i++)
@@ -127,34 +128,34 @@ char int_to_char(int n);
                             }
                         }
                     }
-                    cout << "\nI want to use my <X>th card to capture the <Y>th card.\n";
+                    wcout << L"\nI want to use my <X>th card to capture the <Y>th card.\n";
 
                     //Choose which cards to capture and to be captured.
-                    cout << "X = ";
+                    wcout << L"X = ";
                     //Computer Operation
                     if( ComputerOn()==true ){                        
-                        cout << int_to_char(index_x);
+                        wcout << int_to_char(index_x);
                         Sleep(TIME_CONSTANT);
                         X = index_x;
                     }
                     else
                         X = GetKey();
-                    cout << endl;
+                    wcout << endl;
                     if( X<0 || X>Hand.number()-1 ){
-                        cout << "\nYour input index is out of range!!\n";
+                        wcout << L"\nYour input index is out of range!!\n";
                         goto MENU1;
                     }
-                    cout << "Y = ";
+                    wcout << L"Y = ";
                     //Computer Operation
                     if( ComputerOn()==true ){                        
-                        cout << int_to_char(index_y);
+                        wcout << int_to_char(index_y);
                         Sleep(TIME_CONSTANT);
                         Y = index_y;
                     }
                     else
                         Y = GetKey();
                     if( Y<0 || Y>layout.number()-1 ){
-                        cout << "\nYour input index is out of range!!\n";
+                        wcout << L"\nYour input index is out of range!!\n";
                         goto MENU1;
                     }
 
@@ -162,24 +163,24 @@ char int_to_char(int n);
                     success = CaptureCard( X, Y, Hand, layout);
                     if( success == 1 ){
                         system("cls");
-                        cout << "Layout:\n";
+                        wcout << L"Layout:\n";
                         layout.Print();
-                        cout << "\nCards in hand:\n";
+                        wcout << L"\nCards in hand:\n";
                         Hand.Print();                        
-                        cout << "\nNumber of captured cards: " << Pile.number() << endl;
+                        wcout << L"\nNumber of captured cards: " << Pile.number() << endl;
                     }
                     else{
-                        cout << "\nSorry, this action is invalid.\n";
+                        wcout << L"\nSorry, this action is invalid.\n";
                         goto MENU1;
                     }
                     break;
 
                 case '2':
-                    cout << "\nNo cards are to be captured.\n";
-                    cout << "I want to discard my <X>th card. ";
+                    wcout << L"\nNo cards are to be captured.\n";
+                    wcout << L"I want to discard my <X>th card. ";
 
                     //Choose which card to be discarded to the layout.
-                    cout << "X = ";
+                    wcout << L"X = ";
 
                     //Computer operation
                     if( ComputerOn()==true ){
@@ -192,14 +193,14 @@ char int_to_char(int n);
                             }
                         }
                         X = index;
-                        cout << int_to_char(X);
+                        wcout << int_to_char(X);
                         Sleep(TIME_CONSTANT);                        
                     }
                     else
                         X = GetKey();
-                    cout << endl;
+                    wcout << endl;
                     if( X<0 || X>Hand.number()-1 ){
-                        cout << "\nYour input index is out of range!!\n";
+                        wcout << L"\nYour input index is out of range!!\n";
                         goto MENU1;
                     }
 
@@ -209,9 +210,9 @@ char int_to_char(int n);
 
                     //Print.
                     system("cls");
-                    cout << "Layout:\n";
+                    wcout << L"Layout:\n";
                     layout.Print();
-                    cout << "\nCards in hand:\n";
+                    wcout << L"\nCards in hand:\n";
                     Hand.Print();
                     break;
 
@@ -221,33 +222,33 @@ char int_to_char(int n);
             }
 
             //Second stage
-            cout << "\nNow we are going to flip a card from the deck.\n";
+            wcout << L"\nNow we are going to flip a card from the deck.\n";
 
             //Simulate the flipping process.
-            cout << "Waiting";
+            wcout << L"Waiting";
             for(int i=6; i>=0; i--){
                 Sleep(130*i);
-                cout << '.';
+                wcout << '.';
             }
 
             //Print the flipped card.
-            cout << "\nThe flipped card is: ";
+            wcout << L"\nThe flipped card is: ";
             Main.card(Main.number()-1).Print();
-            cout << endl;            
+            wcout << endl;
 
             //Special-case check for three cards.
             if( Main.card(Main.number()-1).rank_name()==card.rank_name() ){
 
-                cout << "\nNow the layout contains three cards of rank \"" << card.rank_name() << ".\"" << endl << endl;
-                cout << "This is the special case." << endl;
-                cout << "You are going to capture the three cards on the layout with your ";
-                if( Main.card(Main.number()-1).suit_name() == "Diamond" || Main.card(Main.number()-1).suit_name() == "Heart" )
-                    SetColor(4,7);
+                wcout << L"\nNow the layout contains three cards of rank \"" << card.rank_name() << ".\"" << endl << endl;
+                wcout << L"This is the special case." << endl;
+                wcout << L"You are going to capture the three cards on the layout with your ";
+                if( Main.card(Main.number()-1).suit_name() == L"Diamond" || Main.card(Main.number()-1).suit_name() == L"Heart" )
+                    ColorHandler::SetColor(4,7);
                 else
-                    SetColor(0,7);
-                cout << Main.card(Main.number()-1).suit_icon() << Main.card(Main.number()-1).rank_name();
-                SetColor();
-                cout << ".\n\n";
+                    ColorHandler::SetColor(0,7);
+                wcout << Main.card(Main.number()-1).suit_icon() << Main.card(Main.number()-1).rank_name();
+                ColorHandler::SetBackground();
+                wcout << L".\n\n";
 
                 layout.Sort();
 
@@ -262,16 +263,16 @@ char int_to_char(int n);
                 }
                 GetCardToPile(Main.Deal());
 
-                cout << "Capturing";
+                wcout << L"Capturing";
                 for(int i=5; i>=0; i--){
                     Sleep(500);
-                    cout <<'.';
+                    wcout <<'.';
                 }
-                cout << endl << endl;
-                cout << "Now you have captured all cards of rank \"" << card.rank_name() << ".\"\n";
-                cout << "\nNumber of your all captured cards: " << Pile.number() << endl;
-                cout << "\nYour turn is going to finish.\n";
-                cout << "\nPress any key to continue...";
+                wcout << endl << endl;
+                wcout << L"Now you have captured all cards of rank \"" << card.rank_name() << L".\"\n";
+                wcout << L"\nNumber of your all captured cards: " << Pile.number() << endl;
+                wcout << L"\nYour turn is going to finish.\n";
+                wcout << L"\nPress any key to continue...";
                 cin.sync();
                 //Computer operation
                 if( ComputerOn()==true )
@@ -290,10 +291,10 @@ char int_to_char(int n);
             MENU2:
             switch(menu){
                 case '1':                
-                    cout << "\nI want to capture the <X>th card. ";
+                    wcout << L"\nI want to capture the <X>th card. ";
 
                     //Choose which cards to capture and to be captured.
-                    cout << "X = ";
+                    wcout << L"X = ";
 
                     //Computer operation
                     temp_deck.Clear();
@@ -310,35 +311,35 @@ char int_to_char(int n);
                                 index = Pair.at(i).y;
                             }
                         }                        
-                        cout << int_to_char(index);
+                        wcout << int_to_char(index);
                         Sleep(TIME_CONSTANT);
                         X = index;
                     }
                     else
                         X = GetKey();
-                    cout << endl;
+                    wcout << endl;
 
                     //Capture and print the message.
                     success = CaptureCard( Main.number()-1, X, Main, layout);
                     if( success == 1 ){
                         system("cls");
-                        cout << "Layout:\n";
+                        wcout << L"Layout:\n";
                         layout.Print();
-                        cout << "\nCards in hand:\n";
+                        wcout << L"\nCards in hand:\n";
                         Hand.Print();
-                        cout << "\nNumber of captured cards: " << Pile.number() << endl;                        
+                        wcout << L"\nNumber of captured cards: " << Pile.number() << endl;
                     }
                     else{
-                        cout << "Sorry, this action is invalid.\n";
+                        wcout << L"Sorry, this action is invalid.\n";
                         goto MENU2;
                     }
                     break;
 
                 case '2':
-                    cout << "\nNo cards are to be captured.\n";
-                    cout << "Put the card on the layout directly.\n";
+                    wcout << L"\nNo cards are to be captured.\n";
+                    wcout << L"Put the card on the layout directly.\n";
                     layout.Add(Main.Deal());
-                    cout << "Press any key to continue...";
+                    wcout << L"Press any key to continue...";
                     //Computer operation
                     if( ComputerOn()==true )
                         PressAnyKey();
@@ -346,9 +347,9 @@ char int_to_char(int n);
 
                     //Print.
                     system("cls");
-                    cout << "Layout:\n";
+                    wcout << L"Layout:\n";
                     layout.Print();
-                    cout << "\nCards in hand:\n";
+                    wcout << L"\nCards in hand:\n";
                     Hand.Print();
                     break;
 
@@ -356,8 +357,8 @@ char int_to_char(int n);
                     goto MENU2;
                     break;
             }
-            cout << "\nYour turn is going to finish.\n";
-            cout << "\nPress any key to continue....\n";
+            wcout << L"\nYour turn is going to finish.\n";
+            wcout << L"\nPress any key to continue....\n";
             //Computer operation
             if( ComputerOn()==true )
                 PressAnyKey();
@@ -365,11 +366,11 @@ char int_to_char(int n);
             return 0;
         }
 
-        void Player::SetName( string Name ){ // Set the player's name.
+        void Player::SetName( wstring Name ){ // Set the player's name.
             name = Name;
         }
 
-        string Player::GetName( ) const{ // Get the player's name.
+        wstring Player::GetName( ) const{ // Get the player's name.
             return name;
         }
 

@@ -1,11 +1,6 @@
 #include "card.h"
+#include "color.h"
 
-void SetColor(int f,int b)//Used to generate poker-like colors
-{
-    unsigned short ForeColor=f+16*b;
-    HANDLE hCon = GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(hCon,ForeColor);
-}
 
         Card::Card () {
             my_suit = None;
@@ -34,24 +29,24 @@ void SetColor(int f,int b)//Used to generate poker-like colors
         }
 
         //Return the suit's icon in ASCII.
-        char Card::suit_icon () const {
+        wstring Card::suit_icon () const {
             if( my_suit == Club )
-                return 5;
+                return L"\u2663"; //5;
             else if( my_suit == Spade )
-                return 6;
+                return L"\u2660"; //6;
             else if( my_suit == Diamond )
-                return 4;
+                return L"\u2666"; //4;
             else if( my_suit == Heart )
-                return 3;
+                return L"\u2665"; //3;
             else
-                return 0;
+                return L"\u0000"; //0;
         }
 
-        string Card::suit_name () const {
+        wstring Card::suit_name () const {
             return Suit_Names[my_suit];
         }
 
-        string Card::rank_name () const {
+        wstring Card::rank_name () const {
             return Rank_Names[my_rank];
         }
 
@@ -59,36 +54,36 @@ void SetColor(int f,int b)//Used to generate poker-like colors
 
             int score = 0;
             //Ace of spades
-            if( suit_name()=="Spade" && rank_name()=="A" ){
+            if( suit_name()==L"Spade" && rank_name()==L"A" ){
                 if( people == 3 || people == 4 )
                     score += 30;
                 else
                     score += 0;
             }
             //Ace of clubs
-            if( suit_name()=="Club" && rank_name()=="A" ){
+            if( suit_name()==L"Club" && rank_name()==L"A" ){
                 if( people == 4 )
                     score += 40;
                 else
                     score += 0;
             }
             //red Ace
-            if( rank_name()=="A" ){
-                if( suit_name()=="Heart" || suit_name()=="Diamond" )
+            if( rank_name()==L"A" ){
+                if( suit_name()==L"Heart" || suit_name()==L"Diamond" )
                     score += 20;
                 else
                     score += 0;
             }
             //red 9-King
             if( Card::Nine<=rank() && rank()<=Card::King ){
-                if( suit_name()=="Heart" || suit_name()=="Diamond" )
+                if( suit_name()==L"Heart" || suit_name()==L"Diamond" )
                     score += 10;
                 else
                     score += 0;
             }
             //red 2-8
             if( Card::Two<=rank() && rank()<=Card::Eight ){
-                if( suit_name()=="Heart" || suit_name()=="Diamond" )
+                if( suit_name()==L"Heart" || suit_name()==L"Diamond" )
                     score += static_cast<int>(rank());
                 else
                     score += 0;
@@ -102,15 +97,15 @@ void SetColor(int f,int b)//Used to generate poker-like colors
             set_rank(card.rank());
         }
         void Card::Print() const{
-            if( suit_name() == "Diamond" || suit_name() == "Heart" )
-                SetColor(12
+            if( suit_name() == L"Diamond" || suit_name() == L"Heart" )
+                ColorHandler::SetColor(12
                          ,7);
             else
-                SetColor(0,7);
-            cout << suit_icon() << rank_name();
-            SetColor();
+                ColorHandler::SetColor(0,7);
+            wcout << suit_icon() << rank_name();
+            ColorHandler::SetBackground();
         }
 
-const string Card::Suit_Names[] = { "None", "Club", "Diamond", "Heart", "Spade" };
-const string Card::Rank_Names[] = { "Unknown", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K" };
+const wstring Card::Suit_Names[] = { L"None", L"Club", L"Diamond", L"Heart", L"Spade" };
+const wstring Card::Rank_Names[] = { L"Unknown", L"A", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"10", L"J", L"Q", L"K" };
 
