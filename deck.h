@@ -4,19 +4,8 @@
 #include <vector>
 #include "card.h"
 
-struct int_pair{
-    int x;
-    int y;
-    void operator =( const int_pair Pair ){
-        x = Pair.x;
-        y = Pair.y;
-    }
-};
-
 class Deck {
-
     public:
-
         Deck ();
         void Full ();
         void Shuffle ();
@@ -24,8 +13,8 @@ class Deck {
         Card &Deal ();
         void Add (const Card& card);
         void Delete (const int &index);
-        int number () const;
-        Card &card (int i);
+        size_t number () const;
+        Card &card (size_t i);
         void Sort ();
         void Print ();
         Card::Rank special_check (int n) const;
@@ -35,8 +24,8 @@ class Deck {
         vector<Card> cards; // there are 52 cards in each deck
 };
 
-int Print_match_first(Deck deck1, Deck deck2, vector<int_pair>);
-int Print_match_second(Deck deck, vector<int_pair>);
-vector<int_pair> Find_match(Deck deck1, Deck deck2);
+bool Print_match_first(Deck deck1, Deck deck2, vector<pair<int, int>>);
+int Print_match_second(Deck deck, vector<pair<int, int>>);
+vector<pair<int, int>> Find_match(Deck deck1, Deck deck2);
 
 #endif // DECK_H

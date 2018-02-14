@@ -16,9 +16,3 @@ bool Player::ComputerOn() const {
 bool Player::ComputerOff() const {
     return (computer==false);
 }
-
-void Player::PressAnyKey() const {
-    Sleep(1000);
-    keybd_event(VK_RETURN,0,0,0);
-    keybd_event(VK_RETURN,0,KEYEVENTF_KEYUP,0);
-}
