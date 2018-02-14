@@ -5,6 +5,7 @@
 #include "ranking.h"
 
 using namespace std;
+
 const int MAX_LENGTH=10000;
 
 Ranking::Ranking(){
@@ -42,7 +43,6 @@ void Ranking::Clear(){
 }
 
 void Ranking::Print(unsigned int n){
-
     wcout << L"=====================Ranking Board======================\n\n";
     wcout << L"=Rank=|===============Name===============|====Points====" << endl;
     unsigned int i;
@@ -53,7 +53,6 @@ void Ranking::Print(unsigned int n){
         wcout << L" point(s)\n";
     }
     while(i<n){
-
         wprintf(L"  %02d  |",i+1);
         for(int j=0; j<34; j++)
             wcout << '-';
@@ -66,7 +65,6 @@ void Ranking::Print(unsigned int n){
 }
 
 void Ranking::SortByScore(){// Sort by score
-
     Score iter;
     unsigned int index, index_before, index_after;
     bool swapped=false;
@@ -160,7 +158,7 @@ int Ranking::FindByName( int play_persons, wstring search ){//Find someone's nam
     wstring name;
     Score iter;
     wstring cpp_str;
-    unsigned index, index_left, index_right, index_iter;
+    size_t index=0, index_left, index_right, index_iter;
     bool found = false;
     wchar_t c_str[100];
 

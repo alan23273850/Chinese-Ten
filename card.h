@@ -4,10 +4,10 @@
 #include <string>
 #include <windows.h>
 #include <iostream>
+
 using namespace std;
 
 class Card {
-
     public:
         enum Suit{ None, Club, Diamond, Heart, Spade };
         enum Rank{ Unknown, Ace, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King };
