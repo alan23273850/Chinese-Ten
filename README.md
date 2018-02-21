@@ -17,7 +17,7 @@
 
 #### # 先備環境 (Prerequisites)
 
-1. 若僅僅要執行遊戲，不需要先行安裝任何套件。
+1. 若僅僅要執行遊戲，不需要先行安裝任何套件。[執行檔](https://github.com/alan23273850/Chinese-Ten/releases/latest)已發布，可直接下載。
 
 2. 若要從原始碼編譯成可執行檔，則必須先行安裝 Windows 上的 C++ 編譯器，例如 Visual Studio 2017 的 Build Tools。
 
