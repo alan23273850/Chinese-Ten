@@ -1,16 +1,13 @@
-# Program, flags, etc.
 CC      = cl
 CCFLAGS = /c
-OBJ     = main.obj color.obj card.obj deck.obj computer.obj player.obj ranking.obj
-TARGET  = demo.exe
-FLAGS	= /W4 /EHsc
+OBJ     = main.obj body.obj color.obj card.obj deck.obj player.obj ranking.obj utility.obj
+TARGET  = Chinese_Ten.exe
+FLAGS	= /EHsc # /W4
 
-everything: $(TARGET)
+everything: clean $(TARGET)
 
 clean:
 	del $(OBJ) $(TARGET)
-
-all: clean everything
 
 .cpp.obj:
 	$(CC) $(CCFLAGS) $< /Fo$@ $(FLAGS)

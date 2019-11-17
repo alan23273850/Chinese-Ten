@@ -1,98 +1,50 @@
-#include "card.h"
-#include "color.h"
+#include <iostream> // string
+#include "card.h" // Card
+#include "color.h" // ColorHandler
 
-Card::Card () {
-    my_suit = None;
-    my_rank = Unknown;
-}
+using namespace std; // string
 
-Card::Card (Suit s, Rank r) {
-    my_suit = s;
-    my_rank = r;
-}
-
-Card::Suit Card::suit () const {
-    return my_suit;
-}
-
-Card::Rank Card::rank () const {
-    return my_rank;
-}
-
-void Card::set_suit (Suit s) {
-    my_suit = s;
-}
-
-void Card::set_rank (Rank r) {
-    my_rank = r;
-}
-
-//Return the suit's icon in unicode format.
-wstring Card::suit_icon () const {
-    if( my_suit == Club )
-        return L"\u2663"; //5;
-    else if( my_suit == Spade )
-        return L"\u2660"; //6;
-    else if( my_suit == Diamond )
-        return L"\u2666"; //4;
-    else if( my_suit == Heart )
-        return L"\u2665"; //3;
-    else
-        return L"\u0000"; //0;
-}
-
-wstring Card::suit_name () const {
-    return Suit_Names[my_suit];
-}
-
-wstring Card::rank_name () const {
-    return Rank_Names[my_rank];
-}
-
-int Card::Points ( int people ) const {
-    int score = 0;
-
-    //Ace of spades
-    if( suit_name() == L"Spade" && rank_name() == L"A" ){
-        if( people == 3 || people == 4 )
-            score += 30;
+// Return the suit's icon in unicode format.
+string Card::suit_icon() const {
+    switch (my_suit) {
+        case Suit::Spade: return string({(char)0xE2, (char)0x99, (char)0xA0}); // U+2660
+        case Suit::Heart: return string({(char)0xE2, (char)0x99, (char)0xA5}); // U+2665
+        case Suit::Diamond: return string({(char)0xE2, (char)0x99, (char)0xA6}); // U+2666
+        case Suit::Club: return string({(char)0xE2, (char)0x99, (char)0xA3}); // U+2663
+        default: return "";
     }
-    //Ace of clubs
-    if( suit_name() == L"Club" && rank_name() == L"A" ){
-        if( people == 4 )
-            score += 40;
-    }
-    //red Ace
-    if( rank_name() == L"A" ){
-        if( suit_name() == L"Heart" || suit_name() == L"Diamond" )
-            score += 20;
-    }
-    //red 9-King
-    if( Card::Nine <= rank() && rank() <= Card::King ){
-        if( suit_name() == L"Heart" || suit_name() == L"Diamond" )
-            score += 10;
-    }
-    //red 2-8
-    if( Card::Two <= rank() && rank() <= Card::Eight ){
-        if( suit_name() == L"Heart" || suit_name() == L"Diamond" )
-            score += static_cast<int>(rank());
-    }
-    return score;
 }
 
-//Use operator overloading to simplify coding.
-void Card::operator =(const Card &card){
-    set_suit(card.suit());
-    set_rank(card.rank());
-}
-void Card::Print() const{
-    if( suit_name() == L"Diamond" || suit_name() == L"Heart" )
-        ColorHandler::SetColor(12,7);
-    else
-        ColorHandler::SetColor(0,7);
-    wcout << suit_icon() << rank_name();
-    ColorHandler::SetBackground();
+int Card::points(int people) {
+    if (my_suit==Suit::Spade && my_rank==Rank::Ace // Ace of spades
+        && (people==3 || people==4)) // in the 3 or 4 people case
+        return 30;
+    if (my_suit==Suit::Club && my_rank==Rank::Ace // Ace of clubs
+        && people==4) // in the 4 people case
+        return 40;
+    if (my_suit==Suit::Heart || my_suit==Suit::Diamond) { // red
+        if (my_rank == Rank::Ace) // Ace
+            return 20;
+        if (Rank::Nine <= my_rank&&my_rank <= Rank::King) // 9-King
+            return 10;
+        if (Rank::Two <= my_rank&&my_rank <= Rank::Eight) // 2-8
+            return (int)my_rank;
+    }
+    return 0;
 }
 
-const wstring Card::Suit_Names[] = { L"None", L"Club", L"Diamond", L"Heart", L"Spade" };
-const wstring Card::Rank_Names[] = { L"Unknown", L"A", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"10", L"J", L"Q", L"K" };
+void Card::print() const {
+    ColorHandler::set_color(my_suit==Suit::Diamond || my_suit==Suit::Heart);
+    cout << suit_icon() << rank_name();
+    ColorHandler::set_default();
+}
+
+bool Card::can_capture(Card card1, Card card2) {
+    int rank_1 = (int)card1.rank();
+    int rank_2 = (int)card2.rank();
+    return 1<=rank_1&&rank_1<=9 && rank_1+rank_2==10
+        || 10<=rank_1&&rank_1<=13 && rank_1==rank_2;
+}
+
+const string Card::suit_names[] = {"None", "Club", "Diamond", "Heart", "Spade"};
+const string Card::rank_names[] = {"Unknown", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"};

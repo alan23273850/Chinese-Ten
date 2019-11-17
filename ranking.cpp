@@ -1,256 +1,157 @@
-#include <iostream>
-#include <fstream>
-#include <stdlib.h>
-#include <iomanip>
-#include "ranking.h"
+#include <iostream> // cout
+#include <string> // getline
+#include <fstream> // FILE
+#include <iomanip> // setw
+#include "utility.h" // sort functions, clear_screen
+#include "ranking.h" // Ranking
 
-using namespace std;
+using namespace std; // cout
 
-const int MAX_LENGTH=10000;
-
-Ranking::Ranking(){
-    players.clear();
-}
-
-Score Ranking::GetPlayer(int i){
-    return players.at(i);
-}
-
-int Ranking::Recording(int people){
-    wofstream FILE;
-    switch(people){
-        case 2: FILE.open("rec_2_players.txt",ios::app); break;
-        case 3: FILE.open("rec_3_players.txt",ios::app); break;
-        case 4: FILE.open("rec_4_players.txt",ios::app); break;
-        default: return 0;
+void Ranking::recording() {
+    ofstream FILE;
+    switch (records.size()) {
+        case 2: FILE.open(Ranking::file_names[0], ios::app); break;
+        case 3: FILE.open(Ranking::file_names[1], ios::app); break;
+        case 4: FILE.open(Ranking::file_names[2], ios::app); break;
+        default: return;
     }
-    for(unsigned int i=0; i<players.size(); i++)
-        FILE << players.at(i).name << '|' << players.at(i).score << endl;
+    for (int i=0; i<records.size(); i++)
+        FILE << records.at(i).name << ',' << records.at(i).score << endl;
     FILE.close();
-    return 1;
 }
 
-void Ranking::Push_back(Score player){
-    players.push_back(player);
-}
-
-void Ranking::Pop_back(){
-    players.pop_back();
-}
-
-void Ranking::Clear(){
-    players.clear();
-}
-
-void Ranking::Print(unsigned int n){
-    wcout << L"=====================Ranking Board======================\n\n";
-    wcout << L"=Rank=|===============Name===============|====Points====" << endl;
-    unsigned int i;
-    for(i=0; i<players.size(); i++){
-        wprintf(L"  %02d  |",i+1);
-        wcout << setw(34) << players.at(i).name << '|';
-        wcout << setw(5) << players.at(i).score;
-        wcout << L" point(s)\n";
-    }
-    while(i<n){
-        wprintf(L"  %02d  |",i+1);
-        for(int j=0; j<34; j++)
-            wcout << '-';
-        wcout << '|';
-        for(int j=0; j<14; j++)
-            wcout << '-';
-        wcout << endl;
-        i++;
-    }
-}
-
-void Ranking::SortByScore(){// Sort by score
-    Score iter;
-    unsigned int index, index_before, index_after;
-    bool swapped=false;
-    int max;
-    //Sort by score first with insertion sort.
-    for(unsigned int i=0; i<players.size()-1; i++){
-        max = players.at(i).score;
-        index = i;
-        for(unsigned int j=i+1; j<players.size(); j++){
-            if( players.at(j).score > max ){
-                max = players.at(j).score;
-                index = j;
-            }
-        }
-        iter = players.at(index);
-        for(unsigned int j=index; j>i; j--)
-            players.at(j) = players.at(j-1);
-        players.at(i) = iter;        
-    }
-    //If there are same scores, sort them by name with bubble sort.
-    index=0;
-    while( index < players.size()-1 ){
-        index_before = index;
-        while( index<players.size()-1 && players.at(index).score == players.at(index+1).score )//Use index boundary check to prevent from error.
-            index++;
-        index_after = index;
-        do{
-            swapped = false;
-            for(unsigned int i=index_before; i<index_after; i++){
-                if( players.at(i).name > players.at(i+1).name ){
-                    Score temp;
-                    temp = players.at(i);
-                    players.at(i) = players.at(i+1);
-                    players.at(i+1) = temp;
-                    swapped = true;
-                }
-            }
-        }while( swapped == true );
-        index++;
-    }
-}
-
-void Ranking::SortByName(){
-    Score iter;
-    wstring min;
-    unsigned int index, index_before, index_after;
-    bool swapped = false;
-
-    //Sort by name first with selection sort.
-    for(unsigned int i=0; i<players.size()-1; i++){
-        index = i;
-        min = players.at(i).name;        
-        for(unsigned int j=i+1; j<players.size(); j++){
-            if( players.at(j).name < min ){
-                min = players.at(j).name;
-                index = j;
-            }            
-        }
-        iter = players.at(index);        
-        for(unsigned int j=index; j>i; j--)
-            players.at(j) = players.at(j-1);
-        players.at(i) = iter;        
-    }
-
-    //If there are same names, sort them by score with bubble sort.
-    index=0;
-    while( index < players.size()-1 ){
-        index_before = index;
-        while( index<players.size()-1 && players.at(index).name == players.at(index+1).name )//Use index boundary check to prevent from error.
-            index++;
-        index_after = index;
-        do{
-            swapped = false;
-            for(unsigned int i=index_before; i<index_after; i++){
-                if( players.at(i).score < players.at(i+1).score ){
-                    Score temp;
-                    temp = players.at(i);
-                    players.at(i) = players.at(i+1);
-                    players.at(i+1) = temp;
-                    swapped = true;
-                }
-            }
-        }while( swapped == true );
-        index++;
-    }
-}
-
-int Ranking::FindByName( int play_persons, wstring search ){//Find someone's name by binary search.
-    wifstream FILE;
-    Ranking record;
-    wstring name;
-    Score iter;
-    wstring cpp_str;
-    size_t index=0, index_left, index_right, index_iter;
-    bool found = false;
-    wchar_t c_str[100];
-
-    //Clear the original data in the object.
-    Clear();
-
-    //Open the file.
-    switch(play_persons){
-        case 2: FILE.open("rec_2_players.txt"); if( !FILE ) return 0; break;
-        case 3: FILE.open("rec_3_players.txt"); if( !FILE ) return 0; break;
-        case 4: FILE.open("rec_4_players.txt"); if( !FILE ) return 0; break;
-        default: return 0;
-    }
-
-    //Read in.
-    while(FILE.getline(c_str,MAX_LENGTH,'|')){
-        cpp_str.assign(c_str);        
-        iter.name = cpp_str;        
-        FILE.getline(c_str,MAX_LENGTH,'\n');
-        iter.score = _wtoi(c_str);
-        record.Push_back(iter);
-    }
-    FILE.close();
-
-    //Sort first.
-    record.SortByName();
-
-    //Binary search
-    index_left = 0;
-    index_right = record.players.size()-1;
-    while( found==false && index_left<=index_right ){//Note that <= cannot be replaced by <.
-        index = (index_left+index_right)/2;
-        name = record.players.at(index).name;
-        if( name == search )
-            found = true;
-        else if( name < search )
-            index_left = index+1;
-        else if( name > search )
-            index_right = index-1;
+void Ranking::print() {
+    clear_screen();
+    cout << "==================== Ranking Board =====================\n\n";
+    cout << "=Rank=|============== Name ==============|=== Points ===\n";
+    for (int i=0; i<records.size(); i++) {
+        if (i < 99)
+            cout << "  " << setfill('0') << setw(2) << i+1 << "  |" << setfill(' ');
         else
-            break;
+            cout << " " << setfill('0') << setw(3) << i+1 << "  |" << setfill(' ');
+        cout << setw(33) << records.at(i).name << " |";
+        cout << setw(5) << records.at(i).score << " point(s)\n";
     }
-
-    //If nothing is found, terminate the function.
-    if( found==false )
-        return 0;
-
-    //Look for other same player's score.
-    index_iter = index;
-    while( index_iter>0 && record.players.at(index_iter-1).name==record.players.at(index_iter).name )
-        index_iter--;
-    do{
-        Push_back(record.players.at(index_iter));
-        index_iter++;
-    }while( index_iter<record.players.size() && record.players.at(index_iter-1).name==record.players.at(index_iter).name );
-
-    return 1;
 }
 
-int Ranking::FindTop(int play_persons, unsigned int top_persons){
-    wifstream FILE;
-    Score iter;
-    wstring cpp_str;
-    wchar_t c_str[100];
+void Ranking::print(int rows) {
+    clear_screen();
+    cout << "==================== Ranking Board =====================\n\n";
+    cout << "=Rank=|============== Name ==============|=== Points ===\n";
+    int i;
+    for (i=0; i<(rows < records.size() ? rows : records.size()); i++) {
+        cout << "  " << setfill('0') << setw(2) << i+1 << "  |" << setfill(' ');
+        cout << setw(33) << records.at(i).name << " |";
+        cout << setw(5) << records.at(i).score << " point(s)\n";
+    }
+    for (; i<rows; i++) {
+        cout << "  " << setfill('0') << setw(2) << i+1 << "  |" << setfill(' ');
+        for (int j=0; j<34; j++) cout << '-'; cout << '|';
+        for (int j=0; j<14; j++) cout << '-'; cout << endl;
+    }
+}
 
-    //Clear the original data in the object.
-    Clear();
+void Ranking::read_file(int player_num)
+{
+    // Clear the original data.
+    records.clear();
 
-    //Open the file.
-    switch(play_persons){
-        case 2: FILE.open("rec_2_players.txt"); if( !FILE ) return 0; break;
-        case 3: FILE.open("rec_3_players.txt"); if( !FILE ) return 0; break;
-        case 4: FILE.open("rec_4_players.txt"); if( !FILE ) return 0; break;
-        default: return 0;
+    // Open the file.
+    ifstream FILE;
+    switch (player_num) {
+        case 2: FILE.open(Ranking::file_names[0]); break;
+        case 3: FILE.open(Ranking::file_names[1]); break;
+        case 4: FILE.open(Ranking::file_names[2]); break;
+        default: return;
+    }
+    if (!FILE) return;
+
+    // Read in.
+    int score;
+    string name;
+    while (getline(FILE, name, ',')) {
+        FILE >> score;
+        records.push_back(Score(name, score));
+        getline(FILE, name); // absorb the remaining buffer to the EOL. "name" in this line is meaningless.
     }
 
-    //Read in.
-    while(FILE.getline(c_str,MAX_LENGTH,'|')){
-        cpp_str.assign(c_str);
-        iter.name = cpp_str;
-        FILE.getline(c_str,MAX_LENGTH,'\n');
-        iter.score = _wtoi(c_str);
-        Push_back(iter);
-    }
+    // Close the file.
     FILE.close();
-
-    //Insertion sort
-    SortByScore();
-
-    //Store only top_persons elements in players.
-    while( players.size()>top_persons )
-        players.pop_back();
-
-    return 1;
 }
+
+void Ranking::sort_by_score()
+{
+    // First sort by score in "descending" order with selection sort.
+    selection_sort(records, Score::cmp_by_score);
+
+    // If there are same scores, sort them by name in "ascending" order with bubble sort.
+    int end=0, start;
+    while (end+1 < records.size()) { // make "end" run in [0..N-2]
+        start = end;
+        while (end+1 < records.size() // Use index boundary check to avoid error.
+            && records.at(start).score == records.at(end+1).score)
+            end++;
+        // So far, we ensure the elements in [start..end] have the same score. Then
+        // we want to perform bubble sort in this interval. Even if start==end, the
+        // result is correct because no sorting is executed.
+        bubble_sort(records, start, end, Score::cmp_by_name);
+
+        // So far, we guarantee [end] and [end+1] must have different scores, so we can
+        // definitely increment our base pointer and disregard all things before [end+1].
+        end++;
+    }
+}
+
+void Ranking::sort_by_name()
+{
+    // First sort by name in "ascending" order with selection sort.
+    selection_sort(records, Score::cmp_by_name);
+
+    // If there are same names, sort them by score in "descending" order with bubble sort.
+    int end=0, start;
+    while (end+1 < records.size()) { // make "end" run in [0..N-2]
+        start = end;
+        while (end+1 < records.size() // Use index boundary check to avoid error.
+            && records.at(start).name == records.at(end+1).name)
+            end++;
+        // So far, we ensure the elements in [start..end] have the same name. Then
+        // we want to perform bubble sort in this interval. Even if start==end, the
+        // result is correct because no sorting is executed.
+        bubble_sort(records, start, end, Score::cmp_by_score);
+
+        // So far, we guarantee [end] and [end+1] must have different names, so we can
+        // definitely increment our base pointer and disregard all things before [end+1].
+        end++;
+    }
+}
+
+bool Ranking::extract_by_name(string search) // Find someone's name by binary search.
+{
+    int left = 0;
+    int right = (int)records.size()-1;
+    int mid, start, end;
+    bool found = false;
+    while (left <= right) { // Note that <= cannot be replaced by <.
+        mid = (left + right) / 2;
+        string name = records.at(mid).name; // mid must be calculated first
+        if (search < name)
+            right = mid - 1;
+        else if (search > name)
+            left = mid + 1;
+        else { // (search == name)
+            found = true;
+            start = end = mid;
+            while (start-1>=left && records.at(start-1).name==search)
+				start--; // Look for the leftmost score of the same player.
+            while (end+1<=right && records.at(end+1).name==search)
+				end++; // Look for the rightmost score of the same player.
+            break;
+        }
+    }
+    if (!found) return false; // If nothing is found, terminate the function.
+
+    records = vector<Score>(records.begin()+start, records.begin()+end+1);
+    return true;
+}
+
+const string Ranking::file_names[] = {"ranking_2_players.csv", "ranking_3_players.csv", "ranking_4_players.csv"};

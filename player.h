@@ -1,45 +1,36 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "deck.h"
+#include "deck.h" // Deck
 
 class Player {
     public:
-        //General Part
-        Player (wstring Name = L"PLAYER");
-        void GetCardToHand (const Card &card);
-        void GetCardToPile (const Card &card);
-        Deck GetHand () const;
-        Deck GetPile () const;
-        int CaptureCard (int ToCapture_index, int layout_index, Deck &ToCapture, Deck &layout);
-        void Play (int people, Deck &Main, Deck &layout, Card card);
-        void SetName (wstring Name);
-        wstring GetName () const;
-        int Points (int people);
-        void operator =(const Player &player);
+        // General Part
+        Player(string name = "PLAYER");
+        Deck hand() { return my_hand; }
+        Deck captured() { return my_captured; }
+        string name() { return my_name; }
+        void give_name(string name) { my_name = name; }
+        void get_card_to_my_hand(Card card) { my_hand.add(card); }
+        void get_card_to_my_captured(Card card) { my_captured.add(card); }
+        void operator=(const Player &player);
+        void play(Card::Rank special_rank);
+        int points(int people);
 
-        //Computer Part
-        void EnableComputer();
-        void DisableComputer();
-        bool ComputerOn() const;
-        bool ComputerOff() const;
+        // Computer Part
+        void enable_computer() { computer = true; }
+        bool is_computer() { return computer; }
 
-private:
-        Deck Hand;
-        Deck Pile;
-        wstring name; // Player's name
+    private:
+        Deck my_hand;
+        Deck my_captured;
+        string my_name;
         bool computer;
 
-        //Subroutines for playing
-        inline void print_whos_turn ();
-        inline void print_layout_and_own_cards (Deck &layout);
-        inline void first_stage_pairing (int people, Deck &layout);
-        inline void second_stage_prepare (Deck &Main);
-        inline void second_stage_special_case_check (Deck &Main, Deck &layout, Card card);
-        inline void second_stage_pairing (int people, Deck &Main, Deck &layout);
-        inline void finish_this_turn ();
-        inline int choose_card_X (int com_choice);
-        inline int choose_card_Y (Deck &layout, int com_choice);
+        // Subroutines for playing
+        void first_stage_pairing();
+        void second_stage_pairing();
+        bool second_stage_special_case_check(Card::Rank special_rank);
 };
 
 #endif // PLAYER_H

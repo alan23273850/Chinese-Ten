@@ -1,6 +1,9 @@
 *.pro*
 *.obj
+*.o
+*.d
+*.out
 *.exe
-*.txt
+*.csv
 .vscode/
 DEMO/
